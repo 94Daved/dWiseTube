@@ -10,9 +10,11 @@ import cookieParser from "cookie-parser"   (This is the index.js at the top)
   app.use(cookieParser())
 
 ---------------------------------------------------------------------------------------------------
+-I learned about  mongo db "regex" for searching things in the database
 
 ---------------------------------------------------------------------------------------------------
-
+-Use "$addToSet" to  make sure the element your are pushing in the array is only added once 
+ so if that element existed it will not be added again
 ---------------------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------------------
