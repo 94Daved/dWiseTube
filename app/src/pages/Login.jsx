@@ -1,5 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
+import { useState } from "react";
+import { publicRequest } from "../requestResponse";
+import { useDispatch, useSelector } from "react-redux";
+import { loginStart, loginSuccess, loginFailure } from "../redux/userSlice";
+import { auth, provider } from "../firebase/firebaseInit";
+import { signInWithPopup } from "firebase/auth";
 
 const Container = styled.div`
   display: flex;
@@ -71,18 +77,68 @@ const Link = styled.span`
 `;
 
 const SignIn = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.slices.user);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    dispatch(loginStart());
+
+    try {
+      const res = await publicRequest.post(`auth/signin`, { name, password });
+      dispatch(loginSuccess(res.data));
+      localStorage.setItem("token", JSON.stringify(res.data.token));
+    } catch (error) {
+      dispatch(loginFailure());
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    dispatch(loginStart());
+    try {
+      const firstResult = await signInWithPopup(auth, provider);
+      const secondResult = await publicRequest.post("/auth/google", {
+        name: firstResult.user.displayName,
+        email: firstResult.user.email,
+        img: firstResult.user.photoURL,
+      });
+      dispatch(loginSuccess(secondResult.data));
+      localStorage.setItem("token", JSON.stringify(secondResult.data.token));
+    } catch (error) {
+      dispatch(loginFailure());
+    }
+  };
   return (
     <Container>
       <Wrapper>
         <Title>Sign in</Title>
         <SubTitle>to continue to dWiseTube</SubTitle>
-        <Input placeholder="username" />
-        <Input type="password" placeholder="password" />
-        <Button>Sign in</Button>
+        <Input
+          placeholder="username"
+          onChange={(e) => setName(e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button onClick={handleLogin}>Sign in</Button>
         <Title>or</Title>
-        <Input placeholder="username" />
-        <Input placeholder="email" />
-        <Input type="password" placeholder="password" />
+        <Button onClick={signInWithGoogle}>Sign in with Google</Button>
+        <Title>or</Title>
+        <Input
+          placeholder="username"
+          onChange={(e) => setName(e.target.value)}
+        />
+        <Input placeholder="email" onChange={(e) => setEmail(e.target.value)} />
+        <Input
+          type="password"
+          placeholder="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <Button>Sign up</Button>
       </Wrapper>
       <More>

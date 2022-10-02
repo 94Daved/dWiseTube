@@ -35,7 +35,30 @@ export const signin = async (req, res, next) => {
         httpOnly: true,
       })
       .status(200)
-      .json(others);
+      .json({ ...others, token });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const googleAuth = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      const token = jwt.sign({ id: user._id }, process.env.JWT);
+      const userDetails = user._doc;
+      return res.status(200).json({ ...userDetails, token });
+    } else {
+      const newUser = new User({
+        ...req.body,
+        fromGoogle: true,
+      });
+
+      const savedUser = await newUser.save();
+      const token = jwt.sign({ id: savedUser._id }, process.env.JWT);
+
+      res.status(200).json({ ...savedUser._doc, token });
+    }
   } catch (error) {
     next(error);
   }

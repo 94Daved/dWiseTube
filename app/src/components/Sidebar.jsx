@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-
+import { Link } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import ExploreIcon from "@mui/icons-material/Explore";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
@@ -30,6 +30,7 @@ const Wrapper = styled.div`
 
 const ItemsSidebar = styled.div`
   height: 130px;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -45,6 +46,8 @@ const ItemsSidebar = styled.div`
 const Span = styled.span`
   margin-top: 5px;
   color: inherit;
+  width: 100px;
+
   //color: ${({ theme }) => theme.text};
 `;
 
@@ -56,25 +59,35 @@ const Sidebar = () => {
   return (
     <Container>
       <Wrapper>
-        <ItemsSidebar>
-          <HomeIcon style={iconStyle} />
-          <Span>Home</Span>
-        </ItemsSidebar>
+        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+          <ItemsSidebar>
+            <HomeIcon style={iconStyle} />
 
-        <ItemsSidebar>
-          <ExploreIcon style={iconStyle} />
-          <Span>Explore</Span>
-        </ItemsSidebar>
+            <Span>Home</Span>
+          </ItemsSidebar>
+        </Link>
+
+        <Link to="trends" style={{ textDecoration: "none", color: "inherit" }}>
+          <ItemsSidebar>
+            <ExploreIcon style={iconStyle} />
+            <Span>Explore</Span>
+          </ItemsSidebar>
+        </Link>
 
         <ItemsSidebar>
           <FitScreenIcon style={iconStyle} />
           <Span>Shorts</Span>
         </ItemsSidebar>
 
-        <ItemsSidebar>
-          <SubscriptionsIcon style={iconStyle} />
-          <Span>Subscriptions</Span>
-        </ItemsSidebar>
+        <Link
+          to="subscriptions"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <ItemsSidebar>
+            <SubscriptionsIcon style={iconStyle} />
+            <Span>Subscriptions</Span>
+          </ItemsSidebar>
+        </Link>
 
         <ItemsSidebar>
           <VideoLibraryIcon style={iconStyle} />

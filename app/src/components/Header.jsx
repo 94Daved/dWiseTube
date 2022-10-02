@@ -6,6 +6,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import KeyboardVoiceIcon from "@mui/icons-material/KeyboardVoice";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { VideoCallOutlined } from "@material-ui/icons";
+import { useState } from "react";
+import Upload from "./Upload";
 
 const Container = styled.div`
   background-color: ${({ theme }) => theme.bg};
@@ -139,56 +143,92 @@ const Button = styled.button`
   align-items: center;
   gap: 5px;
 `;
+
+const User = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.text};
+`;
+
+const Avatar = styled.img`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #999;
+  object-fit: cover;
+  cursor: pointer;
+`;
+
 const Header = ({ setModal, modal }) => {
+  const [open, setOpen] = useState(false);
+  const { currentUser } = useSelector((state) => state.slices.user);
+
   return (
-    <Container>
-      <Wrapper>
-        <LeftSection>
-          <HamburgContainer>
-            <MenuIcon style={iconStyle} onClick={() => setModal(!modal)} />
-          </HamburgContainer>
-          <Link
-            to="/"
-            style={{
-              textDecoration: "none",
-              color: "inherit",
+    <>
+      <Container>
+        <Wrapper>
+          <LeftSection>
+            <HamburgContainer>
+              <MenuIcon style={iconStyle} onClick={() => setModal(!modal)} />
+            </HamburgContainer>
+            <Link
+              to="/"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
 
-              marginTop: "12px",
-            }}
-          >
-            <Logo>
-              <Img src={dWiseTube} />
-              dWiseTube
-            </Logo>
-          </Link>
-        </LeftSection>
-        <MiddleSection>
-          <Input placeholder="Search" />
-          <SearchButton>
-            <SearchIcon style={buttonIconStyle} />
-          </SearchButton>
-          <VoiceSearchButton>
-            <KeyboardVoiceIcon style={buttonIconStyle} />
-          </VoiceSearchButton>
-        </MiddleSection>
-        <RightSection>
-          <Link
-            to="login"
-            style={{
-              textDecoration: "none",
-              color: "inherit",
+                marginTop: "12px",
+              }}
+            >
+              <Logo>
+                <Img src={dWiseTube} />
+                dWiseTube
+              </Logo>
+            </Link>
+          </LeftSection>
+          <MiddleSection>
+            <Input placeholder="Search" />
+            <SearchButton>
+              <SearchIcon style={buttonIconStyle} />
+            </SearchButton>
+            <VoiceSearchButton>
+              <KeyboardVoiceIcon style={buttonIconStyle} />
+            </VoiceSearchButton>
+          </MiddleSection>
+          <RightSection>
+            {currentUser ? (
+              <User>
+                <VideoCallOutlined
+                  style={buttonIconStyle}
+                  onClick={() => setOpen(true)}
+                />
+                <Avatar src={currentUser.img} />
+                {currentUser?.name}
+              </User>
+            ) : (
+              <Link
+                to="login"
+                style={{
+                  textDecoration: "none",
+                  color: "inherit",
 
-              marginTop: "12px",
-            }}
-          >
-            <Button>
-              <AccountCircleOutlinedIcon />
-              SIGN IN
-            </Button>
-          </Link>
-        </RightSection>
-      </Wrapper>
-    </Container>
+                  marginTop: "12px",
+                }}
+              >
+                <Button>
+                  <AccountCircleOutlinedIcon />
+                  SIGN IN
+                </Button>
+              </Link>
+            )}
+          </RightSection>
+        </Wrapper>
+      </Container>
+      {open && <Upload setOpen={setOpen} />}
+    </>
   );
 };
 

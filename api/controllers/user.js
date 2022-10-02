@@ -46,7 +46,7 @@ export const subscribe = async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(req.user.id, {
       $push: { subscriberdUsers: req.params.id },
-    });
+    }); // (here is ME) i AM, adding the channelId of the page we want to subscribe to
     await User.findByIdAndUpdate(req.params.id, {
       $inc: { subscribers: 1 },
     });
@@ -58,7 +58,7 @@ export const subscribe = async (req, res, next) => {
 
 export const unSubscribe = async (req, res, next) => {
   try {
-    await User.findByIdAndUpate(req.user.id, {
+    await User.findByIdAndUpdate(req.user.id, {
       $pull: { subscriberdUsers: req.params.id },
     });
     await User.findByIdAndUpdate(req.params.id, {

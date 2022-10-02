@@ -4,7 +4,7 @@ import Menu from "./components/Menu";
 import Sidebar from "./components/Sidebar";
 import { useState } from "react";
 import { darkTheme, lightTheme } from "./utils/Theme";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Video from "./pages/Video";
 import Login from "./pages/Login";
@@ -18,6 +18,7 @@ const Container = styled.div`
 const Main = styled.div`
   display: flex;
   position: relative;
+
   z-index: 10;
   margin-top: 90px;
   background-color: ${({ theme }) => theme.bgPlaceHolder};
@@ -26,8 +27,9 @@ const Main = styled.div`
 
 const Wrapper = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
+  /* justify-content: center;
+  align-items: center; */
   padding: 15px 45px;
   margin-left: 120px;
   z-index: -200;
@@ -48,7 +50,9 @@ function App() {
             <Wrapper position={modal && "fixed"}>
               <Routes>
                 <Route path="/">
-                  <Route index element={<Home />} />
+                  <Route index element={<Home type="random" />} />
+                  <Route path="trends" element={<Home type="trend" />} />
+                  <Route path="subscriptions" element={<Home type="sub" />} />
                   <Route path="video">
                     <Route path=":id" element={<Video />} />
                   </Route>

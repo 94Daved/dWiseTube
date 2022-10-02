@@ -1,6 +1,10 @@
 import React from "react";
+import { useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { format } from "timeago.js";
+import { publicRequest } from "../requestResponse";
 
 const Container = styled.div`
   padding: 10px;
@@ -26,7 +30,7 @@ const Details = styled.div`
 
 const ImageProfile = styled.img`
   height: 50px;
-  weight: 50px;
+  width: 50px;
   margin-right: 15px;
   display: ${(props) => props.type === "sm" && "none"};
   border-radius: 50%;
@@ -62,23 +66,31 @@ const VideoStats = styled.p`
   color: ${({ theme }) => theme.textDesc};
 `;
 
-const Card = ({ type }) => {
+const Card = ({ type, video }) => {
+  const [channel, setChannel] = useState([]);
+
+  useEffect(() => {
+    const fetchChannel = async () => {
+      try {
+        const res = await publicRequest.get(`/users/find/${video.userId}`);
+        setChannel(res.data);
+      } catch (error) {}
+    };
+    fetchChannel();
+  }, [video.userId]);
+
   return (
-    <Link to="video/test" style={{ textDecoration: "none" }}>
+    <Link to={`/video/${video._id}`} style={{ textDecoration: "none" }}>
       <Container type={type}>
-        <Image
-          type={type}
-          src="https://supersimple.dev/public/img/exercises/youtube/thumbnails/thumbnail-1.webp"
-        />
+        <Image type={type} src={video.imgUrl} />
         <Details type={type}>
-          <ImageProfile
-            type={type}
-            src="https://supersimple.dev/public/img/exercises/youtube/channel-profile-pics/channel-1.jpeg"
-          />
+          <ImageProfile type={type} src={channel.img} />
           <DescInfos type={type}>
-            <Desc type={type}>Meeting with special guest</Desc>
-            <ChannelName type={type}>Web Dev Simplified</ChannelName>
-            <VideoStats type={type}>2.8k views &#183; 4 hours ago</VideoStats>
+            <Desc type={type}>{video.title}</Desc>
+            <ChannelName type={type}>{channel.name}</ChannelName>
+            <VideoStats type={type}>
+              {video.views} views &#183; {format(video.createdAt)}
+            </VideoStats>
           </DescInfos>
         </Details>
       </Container>

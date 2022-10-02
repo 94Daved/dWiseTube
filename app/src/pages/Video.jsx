@@ -3,17 +3,34 @@ import styled from "styled-components";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import Card from "../components/Card";
 import Comments from "../components/Comments";
+import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { publicRequest } from "../requestResponse";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  dislikes,
+  fetchFailure,
+  likes,
+  fetchStart,
+  fetchSuccess,
+} from "../redux/videoSlice";
+import { sub } from "../redux/userSlice";
+
+import { format } from "timeago.js";
 
 const Container = styled.div`
   display: flex;
   gap: 24px;
+  width: 100%;
 `;
 
 const Content = styled.div`
-  flex: 5;
+  flex: 6;
 `;
 const VideoWrapper = styled.div``;
 
@@ -107,30 +124,84 @@ const Subscribe = styled.button`
   font-size: 18px;
 `;
 
+const VideoFrame = styled.video`
+  max-height: 720px;
+ width: 100%;: ;
+  object-fit: cover;
+`;
+
 const Video = () => {
+  const path = useLocation().pathname.split("/")[2];
+  const { currentUser } = useSelector((state) => state.slices.user);
+  const { currentVideo } = useSelector((state) => state.slices.video);
+  const [channel, setChannel] = useState({});
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fectVideo = async () => {
+      dispatch(fetchStart());
+      try {
+        const videoRes = await publicRequest.get(`videos/find/${path}`);
+        const channelRes = await publicRequest.get(
+          `users/find/${videoRes.data.userId}`
+        ); //the owner of the video which we want to watch (This is his channel)
+
+        dispatch(fetchSuccess(videoRes.data));
+        setChannel(channelRes.data);
+      } catch (error) {
+        dispatch(fetchFailure());
+      }
+    };
+
+    fectVideo();
+  }, [path, dispatch]);
+
+  const handleLike = async () => {
+    await publicRequest.put(`users/like/${currentVideo._id}`);
+    dispatch(likes(currentUser._id));
+  };
+  const handleDislike = async () => {
+    await publicRequest.put(`users/dislike/${currentVideo._id}`);
+    dispatch(dislikes(currentUser._id));
+  };
+
+  const handleSub = async () => {
+    if (!currentUser.subscriberdUsers.includes(channel._id)) {
+      await publicRequest.put(`users/sub/${channel._id}`);
+      dispatch(sub(channel._id));
+    } else {
+      await publicRequest.put(`users/unsub/${channel._id}`);
+      dispatch(sub(channel._id));
+    }
+  };
+
   return (
     <Container>
       <Content>
         <VideoWrapper>
-          <iframe
-            width="100%"
-            height="720"
-            src="https://www.youtube.com/embed/k3Vfj-e1Ma4"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+          <VideoFrame src={currentVideo?.videoUrl}></VideoFrame>
         </VideoWrapper>
-        <Title>Test Video</Title>
+        <Title>{currentVideo?.title}</Title>
         <Details>
-          <Info>7,948,154 views • Jun 22, 2022</Info>
+          <Info>
+            {currentVideo?.views}views • {format(currentVideo?.createdAt)}
+          </Info>
           <Buttons>
-            <Button>
-              <ThumbUpOutlinedIcon /> 123
+            <Button onClick={handleLike}>
+              {currentVideo?.likes?.includes(currentUser?._id) ? (
+                <ThumbUpIcon />
+              ) : (
+                <ThumbUpOutlinedIcon />
+              )}{" "}
+              {currentVideo?.likes.length}
             </Button>
-            <Button>
-              <ThumbDownOffAltOutlinedIcon /> Dislike
+            <Button onClick={handleDislike}>
+              {currentVideo?.dislikes?.includes(currentUser?._id) ? (
+                <ThumbDownIcon />
+              ) : (
+                <ThumbDownOffAltOutlinedIcon />
+              )}{" "}
+              Dislike
             </Button>
             <Button>
               <ReplyOutlinedIcon /> Share
@@ -143,24 +214,24 @@ const Video = () => {
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src="https://www.highburymedia.co.za/wp-content/uploads/2018/04/TECH.jpg" />
+            <Image src={channel.img} />
             <ChannelDetail>
-              <ChannelName>dWise Tech</ChannelName>
-              <ChannelCounter>200K subscribers</ChannelCounter>
-              <Description>
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                Doloribus laborum delectus unde quaerat dolore culpa sit aliquam
-                at. Vitae facere ipsum totam ratione exercitationem. Suscipit
-                animi accusantium dolores ipsam ut.
-              </Description>
+              <ChannelName>{channel.name}</ChannelName>
+              <ChannelCounter>{channel.subscribers} subscribers</ChannelCounter>
+              <Description>{currentVideo?.desc}</Description>
             </ChannelDetail>
           </ChannelInfo>
-          <Subscribe>SUBSCRIBE</Subscribe>
+          <Subscribe onClick={handleSub}>
+            {currentUser.subscriberdUsers?.includes(channel._id)
+              ? "SUBSCRIBED"
+              : "SUBSCRIBE"}
+          </Subscribe>
         </Channel>
         <Hr />
-        <Comments />
+        <Comments videoId={currentVideo?._id} />
       </Content>
       <Recommendation>
+        {/* <Card type="sm" />
         <Card type="sm" />
         <Card type="sm" />
         <Card type="sm" />
@@ -172,8 +243,7 @@ const Video = () => {
         <Card type="sm" />
         <Card type="sm" />
         <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
+        <Card type="sm" /> */}
       </Recommendation>
     </Container>
   );

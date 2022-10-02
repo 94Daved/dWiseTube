@@ -18,6 +18,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import SettingsBrightnessOutlinedIcon from "@mui/icons-material/SettingsBrightnessOutlined";
+import { useSelector } from "react-redux";
 
 const Container = styled.div`
   background-color: ${({ theme }) => theme.bg};
@@ -97,6 +98,8 @@ const iconStyle = {
 };
 
 const Menu = ({ modal, darkMode, setDarkMode }) => {
+  const { currentUser } = useSelector((state) => state.slices.user);
+
   return (
     <Container transition={modal ? 0 : -105}>
       <Wrapper>
@@ -104,14 +107,21 @@ const Menu = ({ modal, darkMode, setDarkMode }) => {
           <HomeIcon style={iconStyle} />
           Home
         </Item>
-        <Item>
-          <ExploreOutlinedIcon style={iconStyle} />
-          Explore
-        </Item>
-        <Item>
-          <SubscriptionsOutlinedIcon style={iconStyle} />
-          Subscriptions
-        </Item>
+        <Link to="trends" style={{ textDecoration: "none", color: "inherit" }}>
+          <Item>
+            <ExploreOutlinedIcon style={iconStyle} />
+            Explore
+          </Item>
+        </Link>
+        <Link
+          to="subscriptions"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
+            <SubscriptionsOutlinedIcon style={iconStyle} />
+            Subscriptions
+          </Item>
+        </Link>
         <Hr />
         <Item>
           <VideoLibraryOutlinedIcon style={iconStyle} />
@@ -122,16 +132,21 @@ const Menu = ({ modal, darkMode, setDarkMode }) => {
           History
         </Item>
         <Hr />
-        <Login>
-          Sign in to like videos, comment, and subscribe.
-          <Link to="login" style={{ textDecoration: "none" }}>
-            <Button>
-              <AccountCircleOutlinedIcon />
-              SIGN IN
-            </Button>
-          </Link>
-        </Login>
-        <Hr />
+
+        {!currentUser && (
+          <>
+            <Login>
+              Sign in to like videos, comment, and subscribe.
+              <Link to="login" style={{ textDecoration: "none" }}>
+                <Button>
+                  <AccountCircleOutlinedIcon />
+                  SIGN IN
+                </Button>
+              </Link>
+            </Login>
+            <Hr />
+          </>
+        )}
         <Title>Best of dWiseTube</Title>
         <Item>
           <LibraryMusicOutlinedIcon style={iconStyle} />
