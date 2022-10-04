@@ -22,6 +22,7 @@ import {
 import { sub } from "../redux/userSlice";
 
 import { format } from "timeago.js";
+import Recommendation from "../components/Recommendation";
 
 const Container = styled.div`
   display: flex;
@@ -71,9 +72,6 @@ const Hr = styled.hr`
   border: 0.5px solid ${({ theme }) => theme.soft};
 `;
 
-const Recommendation = styled.div`
-  flex: 2.5;
-`;
 const Channel = styled.div`
   display: flex;
   justify-content: space-between;
@@ -179,7 +177,7 @@ const Video = () => {
     <Container>
       <Content>
         <VideoWrapper>
-          <VideoFrame src={currentVideo?.videoUrl}></VideoFrame>
+          <VideoFrame src={currentVideo?.videoUrl} controls />
         </VideoWrapper>
         <Title>{currentVideo?.title}</Title>
         <Details>
@@ -230,21 +228,7 @@ const Video = () => {
         <Hr />
         <Comments videoId={currentVideo?._id} />
       </Content>
-      <Recommendation>
-        {/* <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" /> */}
-      </Recommendation>
+      <Recommendation tags={currentVideo?.tags} />
     </Container>
   );
 };

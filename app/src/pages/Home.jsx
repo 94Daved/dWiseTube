@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   column-gap: 15px;
   row-gap: 40px;
 `;
@@ -29,7 +29,6 @@ const Home = ({ type }) => {
     fetchVideos();
   }, [type]);
 
-  console.log(videos);
   return (
     <Container>
       {videos?.map((video) => (

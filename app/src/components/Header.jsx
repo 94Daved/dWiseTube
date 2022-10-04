@@ -5,7 +5,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardVoiceIcon from "@mui/icons-material/KeyboardVoice";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { VideoCallOutlined } from "@material-ui/icons";
 import { useState } from "react";
@@ -164,8 +164,9 @@ const Avatar = styled.img`
 
 const Header = ({ setModal, modal }) => {
   const [open, setOpen] = useState(false);
+  const [q, setQ] = useState(false);
   const { currentUser } = useSelector((state) => state.slices.user);
-
+  const navigate = useNavigate();
   return (
     <>
       <Container>
@@ -190,9 +191,15 @@ const Header = ({ setModal, modal }) => {
             </Link>
           </LeftSection>
           <MiddleSection>
-            <Input placeholder="Search" />
+            <Input
+              placeholder="Search"
+              onChange={(e) => setQ(e.target.value)}
+            />
             <SearchButton>
-              <SearchIcon style={buttonIconStyle} />
+              <SearchIcon
+                style={buttonIconStyle}
+                onClick={() => navigate(`/search?q=${q}`)}
+              />
             </SearchButton>
             <VoiceSearchButton>
               <KeyboardVoiceIcon style={buttonIconStyle} />

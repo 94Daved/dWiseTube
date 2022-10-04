@@ -8,7 +8,6 @@ import { publicRequest } from "../requestResponse";
 
 const Container = styled.div`
   padding: 10px;
-
   cursor: pointer;
   height: ${(props) => props.type === "sm" && "160px"};
   /* background-color: #999; */
@@ -19,7 +18,7 @@ const Container = styled.div`
 
 const Image = styled.img`
   width: ${(props) => (props.type === "sm" ? "60%" : "100%")};
-  height: ${(props) => props.type === "sm" && "100%"};
+  height: ${(props) => (props.type === "sm" ? "100%" : "210px")};
   object-fit: cover;
   margin-bottom: 15px;
 `;
